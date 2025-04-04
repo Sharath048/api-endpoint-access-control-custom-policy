@@ -1,0 +1,37 @@
+id: API Endpoint Access Control Policy
+name: API Endpoint Access Control Policy
+description: Custom Policy used to restrict client access at API EndPoint level. This is designed to use with OpenId Connect access token enforcement policy.
+category: Custom
+type: custom
+violationCategory: authentication
+resourceLevelSupported: true
+encryptionSupported: false
+standalone: true
+supportedJavaVersions: ["8", "11", "17"]
+requiredCharacteristics: []
+providedCharacteristics: []
+configuration:  
+  - propertyName: clientIdExpression
+    name: Client ID Expression
+    description: Mule Expression to be used to extract the Client ID from API requests
+    type: string
+    defaultValue: "authentication.properties.userProperties.client_id"
+    optional: false
+    sensitive: false
+    allowMultiple: false
+  - propertyName: clientName
+    name: Client Name
+    description: Name of the external client that uses this policy
+    type: string
+    defaultValue: []
+    optional: false
+    sensitive: false
+    allowMultiple: false 
+  - propertyName: clientID
+    name: Client ID
+    description: Client ID that needs to be allowed
+    type: string
+    optional: false
+    sensitive: false
+    allowMultiple: true
+    defaultValue: []
