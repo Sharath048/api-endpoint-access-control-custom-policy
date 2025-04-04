@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:http-policy="http://www.mulesoft.org/schema/mule/http-policy"
+  xmlns:http-transform="http://www.mulesoft.org/schema/mule/http-policy-transform"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/http-policy http://www.mulesoft.org/schema/mule/http-policy/current/mule-http-policy.xsd
+    http://www.mulesoft.org/schema/mule/http-policy-transform http://www.mulesoft.org/schema/mule/http-policy-transform/current/mule-http-policy-transform.xsd">
+  <http-policy:proxy name="{{{policyId}}}-custom-policy">
+    <http-policy:source>
+      <try>
+        <choice>
+                    {{#clientID}}             
+          <when expression="#['{{{.}}}'=={{{clientIdExpression}}}]">
+            <logger level="INFO" message="ClientID Matches!"/>
+          </when>
+                    {{/clientID}}                
+          <otherwise>
+            <raise-error type="CUSTOM:NOT_ALLOWED" 
+                            description="#['Access is denied for this API resource']"/>
+          </otherwise>
+        </choice>
+        <error-handler>
+          <on-error-propagate type="CUSTOM:NOT_ALLOWED">
+            <http-transform:set-response statusCode="403">
+              <http-transform:body>#[
+                                output application/json
+                                ---
+                                {"error": "Access is forbidden for this Client ID"}]
+                            </http-transform:body>
+            </http-transform:set-response>
+          </on-error-propagate>
+        </error-handler>
+      </try>
+      <http-policy:execute-next/>
+    </http-policy:source>
+  </http-policy:proxy>
+</mule>
